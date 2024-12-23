@@ -16,16 +16,16 @@ class TokenData(BaseModel):
     username: Optional[str] = None
     role: Optional[UserRole] = None
 
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
 class UserBase(BaseModel):
     username: str
     role: UserRole
     is_active: bool = True
 
 class UserCreate(UserBase):
-    password: str
-
-class UserLogin(BaseModel):
-    username: str
     password: str
 
 class User(UserBase):
