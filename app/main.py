@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .auth.router import router as auth_router
+from .tables.router import router as tables_router
 
 app = FastAPI(title="Café System API")
 
@@ -15,6 +16,8 @@ app.add_middleware(
 
 # Incluir routers
 app.include_router(auth_router)
+app.include_router(tables_router)
+
 
 @app.get("/")
 async def root():
