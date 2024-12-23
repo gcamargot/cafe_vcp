@@ -44,3 +44,7 @@ alembic/versions/*
 
 # Logs
 *.log
+
+# Scripts
+populate_bd.json
+
