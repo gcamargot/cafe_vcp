@@ -1,4 +1,4 @@
-# CaféSystem
+# CafeSystem
 
 Sistema de gestión para cafeterías que permite el manejo de mesas, órdenes y pagos.
 
