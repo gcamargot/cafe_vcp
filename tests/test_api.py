@@ -1,74 +1,5 @@
-import sys
-import os
-from typing import Generator
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 import pytest
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
-
-from app.main import app
-from app.database import Base, get_db
-from app.models import User, Table, Product
-
-# Configuración de la base de datos de prueba
-SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool,
-)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Sobreescribir la dependencia de la base de datos
-def override_get_db():
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
-
-app.dependency_overrides[get_db] = override_get_db
-
-@pytest.fixture(autouse=True)
-def setup_database():
-    Base.metadata.create_all(bind=engine)
-    yield
-    Base.metadata.drop_all(bind=engine)
-
-@pytest.fixture(scope="module")
-def test_client():
-    client = TestClient(app)
-    return client
-
-@pytest.fixture
-def admin_token(test_client):
-    # Crear usuario admin
-    response = test_client.post(
-        "/auth/register",
-        json={
-            "username": "admin",
-            "password": "admin123",
-            "role": "admin",
-            "is_active": True
-        }
-    )
-    assert response.status_code == 201
-
-    # Obtener token
-    response = test_client.post(
-        "/auth/token",
-        json={
-            "username": "admin",
-            "password": "admin123"
-        }
-    )
-    assert response.status_code == 200
-    return response.json()["access_token"]
+from .conftest import test_client, admin_token, cashier_token
 
 def test_create_user(test_client):
     response = test_client.post(
@@ -113,27 +44,26 @@ def test_create_product(test_client, admin_token):
     assert data["name"] == "Test Coffee"
     assert float(data["price"]) == 2.50
 
-def test_get_tables(test_client, admin_token):
-    # Crear una mesa primero
+def test_get_tables(test_client, cashier_token):
     test_client.post(
         "/tables/",
-        headers={"Authorization": f"Bearer {admin_token}"},
+        headers={"Authorization": f"Bearer {cashier_token}"},
         json={"capacity": 4}
     )
 
     response = test_client.get(
         "/tables/",
-        headers={"Authorization": f"Bearer {admin_token}"}
+        headers={"Authorization": f"Bearer {cashier_token}"}
     )
     assert response.status_code == 200
     data = response.json()
     assert len(data) > 0
 
-def test_update_table_status(test_client, admin_token):
+def test_update_table_status(test_client, cashier_token):
     # Crear una mesa
     table_response = test_client.post(
         "/tables/",
-        headers={"Authorization": f"Bearer {admin_token}"},
+        headers={"Authorization": f"Bearer {cashier_token}"},
         json={"capacity": 4}
     )
     table_id = table_response.json()["id"]
@@ -141,7 +71,7 @@ def test_update_table_status(test_client, admin_token):
     # Actualizar estado
     response = test_client.patch(
         f"/tables/{table_id}/status",
-        headers={"Authorization": f"Bearer {admin_token}"},
+        headers={"Authorization": f"Bearer {cashier_token}"},
         json={"status": "occupied"}
     )
     assert response.status_code == 200
@@ -169,3 +99,28 @@ def test_get_products_by_category(test_client, admin_token):
     data = response.json()
     assert len(data) > 0
     assert all(p["category"] == "Bebidas Calientes" for p in data)
+
+def test_token_generation(test_client):
+    # Registrar usuario
+    test_client.post(
+        "/auth/register",
+        json={
+            "username": "testuser2",
+            "password": "test123",
+            "role": "cashier",
+            "is_active": True
+        }
+    )
+
+    # Obtener token
+    response = test_client.post(
+        "/auth/token",
+        json={
+            "username": "testuser2",
+            "password": "test123"
+        }
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "access_token" in data
+    assert data["token_type"] == "bearer"
