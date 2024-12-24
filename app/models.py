@@ -85,10 +85,12 @@ class Order(Base):
     table_id = Column(Integer, ForeignKey('tables.id'))
     user_id = Column(Integer, ForeignKey('users.id'))
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     status = Column(order_status, default=OrderStatus.PENDING)
     total_amount = Column(DECIMAL(10, 2), default=0)
     payment_status = Column(payment_status, default=PaymentStatus.PENDING)
     notes = Column(Text)
+
 
     table = relationship("Table", back_populates="orders")
     user = relationship("User", back_populates="orders")
