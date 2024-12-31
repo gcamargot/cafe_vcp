@@ -21,7 +21,7 @@ Sistema de gestión para cafeterías que permite el manejo de mesas, órdenes y 
 - **Backend**: Python
 - **Base de datos**: PostgreSQL
 - **Pagos**: MercadoPago API
-- **Frontend**: [Por definir]
+- **Frontend**: React/Electron
 
 ## 📋 Requisitos del Sistema
 
