@@ -1,47 +1,68 @@
-# CafeSystem
+# Café System
 
-Sistema de gestión para cafeterías que permite el manejo de mesas, órdenes y pagos.
+Sistema de gestión integral para cafeterías que permite el manejo de mesas, órdenes, cocina y pagos.
 
 ## 🚀 Características
 
-- Sistema de autenticación para diferentes roles (cajero/cocinero)
+### Backend
+- Sistema de autenticación con roles (admin/cajero/cocinero)
 - Gestión de mesas y estados
-- Creación y seguimiento de órdenes
-- Procesamiento de pagos (efectivo y MercadoPago)
-- Control básico de inventario
-- Panel de cocina con órdenes pendientes
-- Integración con criptomonedas
-- Reportes y analytics
-- Gestión avanzada de inventario
-- Sistema de turnos de personal
-- Integración con sistemas contables
+- Sistema de órdenes y comandas
+- Panel de cocina con cola de órdenes
+- Control de inventario básico
+- Integración con MercadoPago (próximamente)
+- API REST documentada con OpenAPI
+
+### Frontend (En desarrollo)
+- Interfaz web responsive
+- Aplicación de escritorio con Electron
+- Panel de administración
+- Vista de cocina en tiempo real
+- Interfaz de punto de venta
+- Modo offline (próximamente)
 
 ## 🛠 Tecnologías
 
-- **Backend**: Python
-- **Base de datos**: PostgreSQL
-- **Pagos**: MercadoPago API
-- **Frontend**: React/Electron
+### Backend
+- **Python 3.10+**
+- **FastAPI** - Framework web
+- **SQLAlchemy** - ORM
+- **PostgreSQL** - Base de datos
+- **Alembic** - Migraciones
+- **JWT** - Autenticación
+- **Pytest** - Testing
+
+### Frontend
+- **React** - Librería UI
+- **TypeScript** - Lenguaje
+- **Vite** - Build tool
+- **TanStack Query** - Data fetching
+- **Zustand** - Estado global
+- **TailwindCSS** - Estilos
+- **Electron** - Aplicación de escritorio
 
 ## 📋 Requisitos del Sistema
 
+### Backend
 - Python 3.10+
 - PostgreSQL 14+
+- Entorno virtual Python
+
+### Frontend
+- Node.js 16+
+- npm 8+
 
 ## 🔧 Instalación
 
+### Backend
 ```bash
 # Clonar el repositorio
 git clone [url-del-repositorio]
 
-# Crear entorno virtual
+# Crear y activar entorno virtual
 python -m venv venv
-
-# Activar entorno virtual
-# Windows:
-venv\Scripts\activate
-# Unix o MacOS:
-source venv/bin/activate
+source venv/bin/activate  # Linux/macOS
+venv\Scripts\activate     # Windows
 
 # Instalar dependencias
 pip install -r requirements.txt
@@ -50,89 +71,72 @@ pip install -r requirements.txt
 cp .env.example .env
 
 # Ejecutar migraciones
-[comandos de migración por definir]
+alembic upgrade head
+
+# Iniciar servidor
+uvicorn app.main:app --reload
 ```
 
-## ⚙️ Configuración
-
-1. Crear archivo `.env` basado en `.env.example`
-2. Configurar credenciales de base de datos
-3. Configurar credenciales de MercadoPago
-4. [Otros pasos de configuración]
-
-## 🚦 Uso
-
+### Frontend
 ```bash
-# Iniciar el servidor
-[comando por definir]
+# Navegar al directorio frontend
+cd cafe-system-frontend
+
+# Instalar dependencias
+npm install
+
+# Iniciar en modo desarrollo
+npm run dev
+
+# Iniciar aplicación Electron (próximamente)
+npm run electron-dev
 ```
 
-### Roles de Usuario
+## 🎯 Roadmap
 
-#### Cajero
-- Gestión de mesas
-- Creación de órdenes
-- Procesamiento de pagos
-- Control de inventario
+- [x] Sistema de autenticación
+- [x] Gestión de mesas
+- [x] Sistema de órdenes
+- [x] Panel de cocina
+- [ ] Interfaz web
+- [ ] Aplicación Electron
+- [ ] Integración de pagos
+- [ ] Modo offline
+- [ ] Reportes y analytics
 
-#### Cocinero
-- Vista de órdenes pendientes
-- Actualización de estado de órdenes
-- Control de inventario de cocina
+## 📚 Documentación
 
-## 🗄️ Estructura del Proyecto
+- **API**: Disponible en `/docs` o `/redoc` cuando el servidor está corriendo
+- **Postman Collection**: Disponible en `/docs/postman`
+- **Tests**: Ejecutar con `pytest tests/`
 
+## 👥 Desarrollo
+
+### Estructura de Carpetas
+
+#### Backend
 ```
-cafesystem/
-├── backend/
-│   ├── api/
-│   ├── core/
-│   ├── models/
-│   └── tests/
-├── frontend/
-├── docs/
-└── scripts/
+app/
+├── auth/           # Autenticación
+├── tables/         # Gestión de mesas
+├── orders/         # Sistema de órdenes
+├── kitchen/        # Panel de cocina
+├── products/       # Gestión de productos
+└── payments/       # Procesamiento de pagos
 ```
 
-## 👥 Contribución
-
-Por el momento este es un proyecto individual y no se aceptan contribuciones externas.
-
-
-## 📝 Notas Adicionales
-
-Este proyecto está en desarrollo activo. La documentación se actualizará a medida que se implementen nuevas características.
-
-```mermaid
-flowchart TB
-    subgraph Frontend
-        UI[Interface de Usuario]
-        Auth[Sistema de Autenticación]
-    end
-
-    subgraph Backend
-        API[API REST]
-        OrderManager[Gestor de Órdenes]
-        PaymentManager[Gestor de Pagos]
-        InventoryManager[Gestor de Inventario]
-    end
-
-    subgraph External
-        MP[MercadoPago API]
-    end
-
-    subgraph Database
-        DB[(PostgreSQL)]
-    end
-
-    UI --> Auth
-    Auth --> API
-    API --> OrderManager
-    API --> PaymentManager
-    API --> InventoryManager
-    PaymentManager --> MP
-    OrderManager --> DB
-    PaymentManager --> DB
-    InventoryManager --> DB
-
+#### Frontend (En desarrollo)
 ```
+src/
+├── components/     # Componentes reutilizables
+├── pages/         # Páginas principales
+├── features/      # Módulos específicos
+├── hooks/         # Custom hooks
+├── stores/        # Estado global
+├── api/           # Cliente API
+└── types/         # Tipos TypeScript
+```
+
+## 📝 Licencia
+
+[Tipo de licencia por definir]
